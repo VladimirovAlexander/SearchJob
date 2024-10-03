@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using SearchJob.Data;
 using SearchJob.Dtos.Job;
 using SearchJob.Interfaces;
+using SearchJob.Interfaces.Mappers;
 using SearchJob.Models;
 using SearchJob.Repository;
+using System.Diagnostics;
 
 namespace SearchJob.Controllers
 {
@@ -56,6 +58,26 @@ namespace SearchJob.Controllers
             return Ok();
            
         }
+
+        [HttpPost]
+
+        public async Task<IActionResult> Create([FromBody] CreateJobRequestDto jobDTO) 
+        {
+
+            //var jobModel = new Job {
+                
+            //    Title = jobDTO.Title,
+            //    Description = jobDTO.Description,
+            //    CompanyName = jobDTO.CompanyName,
+            //    Location = jobDTO.Location,
+            //    SalaryFrom  = jobDTO.SalaryFrom,
+            //    SalaryTo = jobDTO.SalaryTo,
+            //};
+
+            var jobModel = jobDTO.ToJobFromCreateDto();
+            var res = await _repository.CreateAsync(jobModel);
+            return CreatedAtAction(nameof(GetById), new { id = jobModel.Id }, jobModel.ToJobDto());
+        } 
              
        
     }

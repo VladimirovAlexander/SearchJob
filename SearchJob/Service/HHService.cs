@@ -2,7 +2,7 @@
 using SearchJob.Dtos.Job;
 using SearchJob.Interfaces;
 using SearchJob.Models;
-using SearchJob.Mappers;
+using SearchJob.Interfaces.Mappers;
 namespace SearchJob.Service
 {
     public class HHService : IHHService
@@ -27,12 +27,13 @@ namespace SearchJob.Service
                 {
                     var content = await result.Content.ReadAsStringAsync();
 
-                    var tasks = JsonConvert.DeserializeObject<HHJob>(content);
+                    var tasks = JsonConvert.DeserializeObject<HHJob.Root>(content);
 
                     
                     if (tasks != null)
                     {
-                        return tasks.ToJobFromHH();
+                        var firstJob = tasks.items.First();
+                        return firstJob.ToJobFromHH();
                     }
                     return null;
                 }

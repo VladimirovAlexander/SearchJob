@@ -16,7 +16,10 @@ namespace SearchJob.Repository
         }
         public async Task<Job> CreateAsync(Job jobModel)
         {
-            throw new NotImplementedException();
+            await _context.Jobs.AddAsync(jobModel);
+            await _context.SaveChangesAsync();
+            return jobModel;
+
         }
 
         public async Task<Job> DeleteAsync(int id)
