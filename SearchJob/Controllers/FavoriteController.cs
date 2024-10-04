@@ -32,7 +32,7 @@ namespace SearchJob.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("AddJobToFavorites")]
         public async Task<IActionResult> AddFavorite(string title)
         {   
            
@@ -70,7 +70,7 @@ namespace SearchJob.Controllers
 
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("GetFavorites")]
         public async Task<IActionResult> GetUserFavorites()
         {
             var userName =  User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName).Value;

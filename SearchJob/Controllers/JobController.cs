@@ -26,7 +26,7 @@ namespace SearchJob.Controllers
             
         }
         [Authorize]
-        [HttpGet]
+        [HttpGet("GetAllJob")]
         public async Task<IActionResult> GetAll()
         {
             var job = await _repository.GetAsync();
@@ -39,7 +39,7 @@ namespace SearchJob.Controllers
             return Ok(job);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetJobById{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var job = await _repository.GetByIdAsync(id);
@@ -50,7 +50,7 @@ namespace SearchJob.Controllers
             return Ok(job);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteJobById{id}")]
         
         public async Task<IActionResult> Delete(int id)
         {
@@ -59,7 +59,7 @@ namespace SearchJob.Controllers
            
         }
 
-        [HttpPost]
+        [HttpPost("CreateJob")]
 
         public async Task<IActionResult> Create([FromBody] CreateJobRequestDto jobDTO) 
         {
