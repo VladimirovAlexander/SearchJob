@@ -1,0 +1,90 @@
+﻿* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.profile-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+    .profile-container:hover {
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    }
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #e1e1e1;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-photo {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin-right: 20px;
+    border: 3px solid #007bff;
+}
+
+.profile-info h2 {
+    margin: 0;
+    font-size: 26px;
+    color: #007bff;
+}
+
+.profile-info p {
+    margin: 5px 0;
+    color: #555;
+    font-size: 16px;
+}
+
+.profile-actions {
+    margin-top: 20px;
+}
+
+.action-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+
+.social-links {
+    margin-top: 20px;
+}
+
+.social-link {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+    .social-link:hover {
+        color: #0056b3;
+    }

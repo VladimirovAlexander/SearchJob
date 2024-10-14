@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SearchJob.Dtos.Account;
@@ -9,7 +10,7 @@ namespace SearchJob.Controllers
 {
     [Route("api/account")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
@@ -65,11 +66,11 @@ namespace SearchJob.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromForm]LoginDto loginDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return View(loginDto);
             }
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == loginDto.Username.ToLower());
 
@@ -78,23 +79,34 @@ namespace SearchJob.Controllers
                 return Unauthorized("Invalid username");
             }
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, true);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (!result.Succeeded) return Unauthorized("Username not found and/or password incorrect");
+            if (result.Succeeded) return Redirect("/api/Job/GetAllJob");
 
-            return Ok(
-                new NewUserDto
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
-                });
+            ModelState.AddModelError(string.Empty, "Неправильный логин или пароль");
+            return View(loginDto);
         }
 
-        [HttpGet("profile")]
-        public async Task<IActionResult> GetProfile()
+        [HttpGet("login")]
+        public IActionResult Login()
         {
-            var user =  await _userManager.GetUserAsync(User);
+            return View();
+        }
+
+
+
+        [HttpGet("profile")]
+        //[Authorize]
+        public async Task<IActionResult> Profile()
+        {   
+            
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+
         }
     }
 }

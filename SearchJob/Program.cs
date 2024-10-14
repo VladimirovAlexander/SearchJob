@@ -97,6 +97,11 @@ namespace SearchJob
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();  
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IHHService, HHService>();
+
+            builder.Services.ConfigureApplicationCookie(option =>
+            {;
+                option.LoginPath = "/Account/Login";
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
