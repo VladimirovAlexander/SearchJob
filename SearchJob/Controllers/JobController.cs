@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SearchJob.Data;
 using SearchJob.Dtos.Job;
 using SearchJob.Interfaces;
@@ -14,7 +15,7 @@ namespace SearchJob.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class JobController : ControllerBase
+    public class JobController : Controller
     {
         private readonly JobDbContext _context;
         private readonly IJobRepository _repository;
@@ -25,16 +26,35 @@ namespace SearchJob.Controllers
             _repository = repository;
             
         }
-        [Authorize]
+
+        //[Authorize]
         [HttpGet("GetAllJob")]
         public async Task<IActionResult> GetAll()
         {
             var job = await _repository.GetAsync();
 
+           
             if (job == null) {
 
                 return NotFound();
             }
+
+            
+            return View(job);
+        }
+
+        //[Authorize]
+        [HttpGet("GetAllJobApi")]
+        public async Task<IActionResult> GetAllApi()
+        {
+            var job = await _repository.GetAsync();
+
+            if (job == null)
+            {
+
+                return NotFound();
+            }
+
 
             return Ok(job);
         }

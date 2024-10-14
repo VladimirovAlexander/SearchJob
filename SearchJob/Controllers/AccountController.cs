@@ -90,5 +90,11 @@ namespace SearchJob.Controllers
                     Token = _tokenService.CreateToken(user)
                 });
         }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var user =  await _userManager.GetUserAsync(User);
+        }
     }
 }

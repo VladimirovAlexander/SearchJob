@@ -13,9 +13,9 @@ namespace SearchJob.Models
         
         public string Location { get; set; } = string.Empty;
         
-        public int? SalaryFrom { get; set; } 
+        public decimal? SalaryFrom { get; set; } 
         
-        public int? SalaryTo { get; set; }
+        public decimal? SalaryTo { get; set; }
         public string? Url { get; set; } = string.Empty;
 
         public DateTime PostedDate { get; set; }
