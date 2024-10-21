@@ -11,9 +11,11 @@
         
         <h1 class="mb-4">Поиск вакансий</h1>
 
+        
+        <form method="get" asp-controller="Job" asp-action="Search">
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Введите название вакансии" asp-for="SearchQuery" />
-            <button class="btn btn-primary" type="submit" formmethod="get">Поиск</button>
+                <input type="text" class="form-control" placeholder="Введите название вакансии" name="searchString" value="@ViewData["CurrentFilter"]" />
+                <button class="btn btn-primary" type="submit">Поиск</button>
         </div>
 
         <div class="mb-3">
