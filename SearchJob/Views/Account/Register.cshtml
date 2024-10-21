@@ -1,0 +1,65 @@
+﻿@model SearchJob.Dtos.Account.RegisterDTO
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация в системе</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Регистрация</h2>
+
+        <form asp-controller="Account" asp-action="register" method="post">
+
+            
+          
+
+            @if (TempData["Errors"] != null)
+            {
+                var errorList = TempData["Errors"] as List<string>;
+                if (errorList != null && errorList.Any())
+                {
+                    foreach (var error in errorList)
+                    {
+                        <div class="alert alert-danger">
+                            @error
+                        </div>
+                    }
+                }
+            }
+            
+
+            <div class="mb-3">
+                <label for="Username" class="form-label">Имя пользователя</label>
+                <input type="text" class="form-control" id="Username" name="Username" asp-for="Username" placeholder="Введите имя пользователя" required>
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Электронная почта</label>
+                <input type="email" class="form-control" id="Email" name="Email" asp-for="Email" placeholder="Введите электронную почту" required>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="Password" class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="Password" name="Password" asp-for="Password" placeholder="Введите пароль" required>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                <span>
+                    Уже зарегистрирован? <a href="/api/account/login">Войти</a>
+                </span>
+            </div>
+        </form>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

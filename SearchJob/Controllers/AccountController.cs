@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SearchJob.Dtos.Account;
 using SearchJob.Interfaces;
 using SearchJob.Models;
+using System.Security.Claims;
 
 namespace SearchJob.Controllers
 {
@@ -15,54 +17,68 @@ namespace SearchJob.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<AppUser> _signInManager;
-        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService, SignInManager<AppUser> signInManager)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService, SignInManager<AppUser> signInManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _signInManager = signInManager;
+            _httpContextAccessor = httpContextAccessor;
+
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
+        public async Task<IActionResult> Register([FromForm] RegisterDTO registerDTO)
         {
-                
             try
             {
-                if(!ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return View(registerDTO);
+                }
+
                 var appUser = new AppUser
                 {
                     UserName = registerDTO.Username,
                     Email = registerDTO.Email,
                 };
-                var createdUser = await _userManager.CreateAsync(appUser,registerDTO.Password);
-                
+
+                var createdUser = await _userManager.CreateAsync(appUser, registerDTO.Password);
+
                 if (createdUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
-                    if (roleResult.Succeeded) {
 
-                        return Ok(
-                            new NewUserDto
-                            {
-                                UserName = appUser.UserName,
-                                Email = appUser.Email,
-                                Token = _tokenService.CreateToken(appUser)
-                            });
+                    if (roleResult.Succeeded)
+                    {
+                        TempData["SuccessMessage"] = "Пользователь успешно зарегистрирован. Пожалуйста, войдите в систему.";
+                        return RedirectToAction("Login", "Account");
                     }
                     else
                     {
-                        return StatusCode(900, roleResult.Errors);
+                        TempData["ErrorMessage"] = "Пользователь не зарегистрирован. Пожалуйста, попробуйте еще раз.";
+                        return View(registerDTO);
                     }
                 }
                 else
                 {
-                    return StatusCode(900, createdUser.Errors);
+
+                    TempData["Errors"] = createdUser.Errors.Select(e => e.Description).ToList();
+                    return View(registerDTO);
                 }
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                return StatusCode(500, ex);
+                ModelState.AddModelError("", $"Произошла ошибка: {ex.Message}");
+                TempData["ErrorMessage"] = "Пользователь не зарегистрирован. Пожалуйста, попробуйте еще раз.";
+                return View(registerDTO);
             }
+        }
+
+        [HttpGet("register")]
+        public IActionResult Register()
+        
+        {
+            return View();
         }
 
         [HttpPost("login")]
@@ -81,7 +97,16 @@ namespace SearchJob.Controllers
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            if (result.Succeeded) return Redirect("/api/Job/GetAllJob");
+            if (result.Succeeded) {
+
+
+                var token = _tokenService.CreateToken(user);
+
+                
+                _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt-token", token);
+                
+                return Redirect("/api/Job/GetAllJob");
+            } 
 
             ModelState.AddModelError(string.Empty, "Неправильный логин или пароль");
             return View(loginDto);
@@ -96,17 +121,17 @@ namespace SearchJob.Controllers
 
 
         [HttpGet("profile")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Profile()
-        {   
-            
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+        {
+            var username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+            var appUser = await _userManager.FindByNameAsync(username);
+
+            if (appUser == null)
             {
                 return NotFound();
             }
-            return View(user);
-
+            return View(appUser);
         }
     }
 }

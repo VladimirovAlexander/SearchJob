@@ -24,8 +24,8 @@ namespace SearchJob.Repository
         }
 
         public async Task<List<Job>> GetUserFavorite(AppUser user)
-        {
-            return await _context.Favorites.Where(x => x.AppUserId == user.Id)
+        {   
+            var favoriteModel = await _context.Favorites.Where(x => x.AppUserId == user.Id)
             .Select(job => new Job
             {
                 Id = job.JobId,
@@ -37,6 +37,7 @@ namespace SearchJob.Repository
                 SalaryTo = job.Job.SalaryTo,
                 Url = job.Job.Url,
             }).ToListAsync();
+            return favoriteModel;
         }
     }
 }

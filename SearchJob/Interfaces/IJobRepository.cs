@@ -12,5 +12,8 @@ namespace SearchJob.Interfaces
         public Task<Job> CreateAsync(Job jobModel);
 
         public Task<Job> DeleteAsync(int id);
+
+        public Task<Job> GetBySymbolAsync(string searchString);
+
     }
 }

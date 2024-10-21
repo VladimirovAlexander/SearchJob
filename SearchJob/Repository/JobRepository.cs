@@ -46,5 +46,10 @@ namespace SearchJob.Repository
             return job;
         }
 
+        public async Task<Job> GetBySymbolAsync(string searchString)
+        {
+            var job = await _context.Jobs.FirstOrDefaultAsync(x => x.Title == searchString);
+            return job;
+        }
     }
 }

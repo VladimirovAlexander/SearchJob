@@ -92,11 +92,23 @@ namespace SearchJob
 
                     ) 
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["jwt-token"];
+                        return Task.CompletedTask;
+                    }
+                };
             });
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<IJobRepository, JobRepository>();
             builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();  
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IHHService, HHService>();
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.ConfigureApplicationCookie(option =>
             {;
@@ -110,8 +122,12 @@ namespace SearchJob
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            
            
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -120,6 +136,8 @@ namespace SearchJob
                 pattern:  "{controller = Job}/{action = GetAll}/{id?}");
             
             app.MapControllers();
+
+            
 
             app.Run();
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using SearchJob.Data;
 using SearchJob.Interfaces;
@@ -10,9 +11,9 @@ using System.Security.Claims;
 
 namespace SearchJob.Controllers
 {
-    [ApiController]
+    
     [Route("api/favorites")]
-    public class FavoriteController:ControllerBase 
+    public class FavoriteController:Controller 
     {
         private readonly UserManager<AppUser> _userManager;
         
@@ -33,29 +34,24 @@ namespace SearchJob.Controllers
 
         [Authorize]
         [HttpPost("AddJobToFavorites")]
-        public async Task<IActionResult> AddFavorite(string title)
+        public async Task<IActionResult> AddFavorite([FromForm]int id)
         {   
            
             var username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
             var appUser = await _userManager.FindByNameAsync(username);
-            var job = (await _jobRepo.GetAsync()).FirstOrDefault(x => x.Title == title);
+            var job = (await _jobRepo.GetAsync()).FirstOrDefault(x => x.Id == id);
+            var userFavorites = await _favoriteRepo.GetUserFavorite(appUser);
 
 
-            
-            if (job == null)
+            var existingFavorite = userFavorites.FirstOrDefault(x => x.Id == job.Id);
+            if (existingFavorite != null)
             {
-                job = await _hhService.FindJobByTitleAsync(title);
-                if (job == null)
-                {
-                    return BadRequest("Job does not exists");
-                }
-                else
-                {
-                    await _jobRepo.CreateAsync(job);
-                }
+                TempData["ErrorMessage"] = $"Вакансия {job.Title} уже находится в избранном.";
+                return RedirectToAction("GetAll", "Job");
             }
             var favoriteModel = new Favorite
-            {
+            {   
+
                 JobId = job.Id,
                 AppUserId = appUser.Id
 
@@ -71,12 +67,12 @@ namespace SearchJob.Controllers
 
         [Authorize]
         [HttpGet("GetFavorites")]
-        public async Task<IActionResult> GetUserFavorites()
+        public async Task<IActionResult> Favorites()
         {
             var userName =  User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName).Value;
             var appUser = await _userManager.FindByNameAsync(userName);
             var userFavorite = await _favoriteRepo.GetUserFavorite(appUser);
-            return Ok(userFavorite);
+            return View(userFavorite);
         }
 
     }
