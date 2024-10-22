@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Common;
+using NuGet.Protocol;
 using SearchJob.Dtos.Account;
 using SearchJob.Interfaces;
 using SearchJob.Models;
@@ -132,6 +134,28 @@ namespace SearchJob.Controllers
                 return NotFound();
             }
             return View(appUser);
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task <IActionResult> Update(UpdateAccountRequestDto updateDto)
+        {
+
+            var username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+            var appUser = await _userManager.FindByNameAsync(username);
+            var newToken = _tokenService.CreateToken(appUser);
+
+            var appUserNewEmail = await _userManager.ChangeEmailAsync(appUser, updateDto.Email, newToken);
+            
+            return View(appUser);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Exit()
+        {
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("jwt-token");
+            return RedirectToAction("Login", "Account");
         }
     }
 }
