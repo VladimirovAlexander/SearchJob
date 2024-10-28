@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SearchJob.Data;
 using SearchJob.Interfaces;
 using SearchJob.Models;
@@ -18,9 +19,12 @@ namespace SearchJob.Repository
             return favorite;
         }
 
-        public async Task<Favorite> Delete(AppUser appUser, string symbol)
+        public async Task<Favorite> DeleteJobFromFavorite(int id)
         {
-            throw new NotImplementedException();
+            var favoriteModel = await _context.Favorites.FirstOrDefaultAsync(x => x.JobId == id);
+            _context.Favorites.Remove(favoriteModel);
+            await _context.SaveChangesAsync();
+            return favoriteModel;
         }
 
         public async Task<List<Job>> GetUserFavorite(AppUser user)
@@ -39,5 +43,7 @@ namespace SearchJob.Repository
             }).ToListAsync();
             return favoriteModel;
         }
+
+        
     }
 }

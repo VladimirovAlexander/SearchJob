@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.DotNet.Scaffolding.Shared.Messaging;
-using Microsoft.EntityFrameworkCore;
-using SearchJob.Data;
+using NuGet.Protocol.Core.Types;
+using SearchJob.Dtos.Job;
 using SearchJob.Interfaces;
+using SearchJob.Mappers;
 using SearchJob.Models;
-using SearchJob.Repository;
 using System.Security.Claims;
 
 namespace SearchJob.Controllers
@@ -21,25 +20,32 @@ namespace SearchJob.Controllers
 
         private readonly IJobRepository _jobRepo;
 
-        private readonly IHHService _hhService;
-        public FavoriteController(UserManager<AppUser> userManager, IFavoriteRepository favoriteRepo, IJobRepository jobRepo, IHHService hhService) 
+        public FavoriteController(UserManager<AppUser> userManager, IFavoriteRepository favoriteRepo, IJobRepository jobRepo) 
         {
 
             _userManager = userManager;
             _favoriteRepo = favoriteRepo;
-            _jobRepo = jobRepo;
-            _hhService = hhService;
+            _jobRepo = jobRepo;            
 
         }
 
         [Authorize]
         [HttpPost("AddJobToFavorites")]
-        public async Task<IActionResult> AddFavorite([FromForm]int id)
+        public async Task<IActionResult> AddFavorite([FromForm] Job job)
         {   
            
             var username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
             var appUser = await _userManager.FindByNameAsync(username);
-            var job = (await _jobRepo.GetAsync()).FirstOrDefault(x => x.Id == id);
+
+           
+            var jobModel = (await _jobRepo.GetAsync()).FirstOrDefault(x => x.Id == job.Id);
+            if(jobModel == null)
+            {
+               
+                var createdJob = await _jobRepo.CreateAsync(job);
+                
+
+            }
             var userFavorites = await _favoriteRepo.GetUserFavorite(appUser);
 
 
@@ -73,6 +79,17 @@ namespace SearchJob.Controllers
             var appUser = await _userManager.FindByNameAsync(userName);
             var userFavorite = await _favoriteRepo.GetUserFavorite(appUser);
             return View(userFavorite);
+        }
+
+        [Authorize]
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteJobFromFavories([FromForm]int id)
+        {
+            var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName).Value;
+            var appUser = await _userManager.FindByNameAsync(userName);
+            var userFavorite = await _favoriteRepo.DeleteJobFromFavorite(id);
+
+            return RedirectToAction("Favorites");  
         }
 
     }

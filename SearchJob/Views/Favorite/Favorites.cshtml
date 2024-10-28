@@ -1,5 +1,7 @@
 ﻿@model List<Job>
 @using SearchJob.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -12,7 +14,7 @@
         <h1 class="mb-4">Поиск вакансий</h1>
 
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Введите название вакансии" asp-for="SearchQuery" />
+            <input type="text" class="form-control" placeholder="Введите название вакансии" />
             <button class="btn btn-primary" type="submit" formmethod="get">Поиск</button>
         </div>
 
@@ -39,7 +41,10 @@
                             <p class="card-text">
                                 <small class="text-muted">Зарплата: от @job.SalaryFrom</small>
                             </p>
-                            <a href="AddToFavorites?jobId=@job.Id" class="btn btn-secondary">Удалить с избранного</a>
+                            <form method="post" asp-controller="Favorite" asp-action="DeleteJobFromFavories">
+                                <input type="hidden" name="id" value="@job.Id" />
+                                <button type="submit" class="btn btn-secondary">Удалить с избранного</button>
+                            </form>
                         </div>
                     </div>
                 </div>

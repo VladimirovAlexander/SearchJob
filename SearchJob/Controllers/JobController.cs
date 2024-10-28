@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SearchJob.Data;
 using SearchJob.Dtos.Job;
 using SearchJob.Interfaces;
-using SearchJob.Interfaces.Mappers;
+using SearchJob.Mappers;
 using SearchJob.Models;
-using SearchJob.Repository;
-using System.Diagnostics;
+
 
 namespace SearchJob.Controllers
 {
@@ -19,44 +16,50 @@ namespace SearchJob.Controllers
     {
         private readonly JobDbContext _context;
         private readonly IJobRepository _repository;
-
-        public JobController(JobDbContext context, IJobRepository repository)
+        private readonly IHHService _service;
+        public JobController(JobDbContext context, IJobRepository repository, IHHService service)
         {
             _context = context;
             _repository = repository;
-            
+            _service = service;
         }
 
         //[Authorize]
         [HttpGet("GetAllJob")]
         public async Task<IActionResult> GetAll()
         {
-            var job = await _repository.GetAsync();
+            var jobFromDb = await _repository.GetAsync();
 
-           
-            if (job == null) {
+            var jobFromHH = await _service.FindJobInHHAsync(1);
 
-                return NotFound();
+            var jobs = jobFromDb.Union(jobFromHH).ToList();
+
+            if (jobs == null) {
+
+                return View(jobFromDb);
             }
 
             
-            return View(job);
+            return View(jobs);
         }
 
         //[Authorize]
         [HttpGet("GetAllJobApi")]
         public async Task<IActionResult> GetAllApi()
         {
-            var job = await _repository.GetAsync();
+            var jobFromDb = await _repository.GetAsync();
 
-            if (job == null)
+            var jobFromHH = await _service.FindJobInHHAsync(2);
+
+            var jobs = jobFromDb.Union(jobFromHH);
+            if (jobs == null)
             {
 
                 return NotFound();
             }
 
 
-            return Ok(job);
+            return Ok(jobs);
         }
 
         [HttpGet("GetJobById{id}")]
@@ -109,6 +112,20 @@ namespace SearchJob.Controllers
             ViewData["CurrentFilter"] = searchString;
 
             return View("GetAll", jobs);
+        }
+
+        [HttpGet("Details{id}")]
+        [Authorize]
+        public async Task<IActionResult> Details(int id)
+        {
+            var jobModel = await _repository.GetByIdAsync(id);
+            if (jobModel == null)
+            {
+                var res = await _repository.CreateAsync(jobModel);
+                jobModel = res;
+            }
+
+            return View(jobModel);
         }
 
 

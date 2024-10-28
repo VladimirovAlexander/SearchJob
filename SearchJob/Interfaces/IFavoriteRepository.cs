@@ -7,6 +7,8 @@ namespace SearchJob.Interfaces
         Task<List<Job>> GetUserFavorite(AppUser user);
         Task<Favorite> CreateAsync(Favorite favorite);
 
-        Task<Favorite> Delete(AppUser appUser, string symbol);
+        Task<Favorite> DeleteJobFromFavorite(int id);
+
+        
     }
 }

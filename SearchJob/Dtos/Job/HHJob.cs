@@ -54,7 +54,7 @@ namespace SearchJob.Dtos.Job
 
         public class Item
         {
-            public string id { get; set; }
+            public int id { get; set; }
             public bool premium { get; set; }
             public string name { get; set; }
             public object department { get; set; }
@@ -119,6 +119,7 @@ namespace SearchJob.Dtos.Job
 
         public class Root
         {
+
             public List<Item> items { get; set; }
             public int found { get; set; }
             public int pages { get; set; }
@@ -133,8 +134,8 @@ namespace SearchJob.Dtos.Job
 
         public class Salary
         {
-            public int from { get; set; }
-            public object to { get; set; }
+            public int? from { get; set; }
+            public object? to { get; set; }
             public string currency { get; set; }
             public bool gross { get; set; }
         }

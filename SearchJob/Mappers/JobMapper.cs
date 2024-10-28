@@ -2,15 +2,16 @@
 using SearchJob.Models;
 
 
-namespace SearchJob.Interfaces.Mappers
+namespace SearchJob.Mappers
 {
     public static class JobMapper
     {
 
         public static JobDto ToJobDto(this Job jobModel)
         {
-            return new JobDto { 
-                
+            return new JobDto
+            {
+
                 Id = jobModel.Id,
                 Title = jobModel.Title,
                 Description = jobModel.Description,
@@ -50,7 +51,8 @@ namespace SearchJob.Interfaces.Mappers
 
             //};
             return new Job
-            {
+            {   
+                Id = hhJob.id,
                 Title = hhJob?.name ?? "No title",
                 Description = hhJob?.snippet?.responsibility ?? "No description available",
                 CompanyName = hhJob?.employer?.name ?? "Unknown company",
