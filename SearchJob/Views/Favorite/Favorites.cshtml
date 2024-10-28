@@ -13,10 +13,12 @@
 
         <h1 class="mb-4">Поиск вакансий</h1>
 
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Введите название вакансии" />
-            <button class="btn btn-primary" type="submit" formmethod="get">Поиск</button>
-        </div>
+        <form method="get" asp-controller="Favorite" asp-action="Search">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Введите название вакансии" name="searchString" value="@ViewData["CurrentFilter"]" />
+                <button class="btn btn-primary" type="submit">Поиск</button>
+            </div>
+        </form>
 
         <div class="mb-3">
 
@@ -31,22 +33,28 @@
             @foreach (var job in Model)
             {
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 d-flex flex-column">
-                        <div class="card-body flex-grow-1">
-                            <h5 class="card-title">@job.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@job.CompanyName</h6>
-                            <p class="card-text">@job.Description</p>
+                    <a href="@Url.Action("Details", "Job", new { id = job.Id })" class="text-decoration-none text-dark">
+                        <div class="card h-100 d-flex flex-column">
+                            <div class="card-body flex-grow-1">
+                                <h5 class="card-title">@job.Title</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">@job.CompanyName</h6>
+                                <p class="card-text">@job.Description</p>
+                            </div>
+                            <div class="mt-auto">
+                                <p class="card-text">
+                                    <small class="text-muted">Зарплата: от @job.SalaryFrom</small>
+                                </p>
+                                <form method="post" asp-controller="Favorite" asp-action="AddFavorite">
+                                    <input type="hidden" name="Id" value="@job.Id" />
+                                    <input type="hidden" name="Title" value="@job.Title" />
+                                    <input type="hidden" name="CompanyName" value="@job.CompanyName" />
+                                    <input type="hidden" name="Description" value="@job.Description" />
+                                    <input type="hidden" name="SalaryFrom" value="@job.SalaryFrom" />
+                                    <button type="submit" class="btn btn-secondary">Добавить в избранное</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="mt-auto">
-                            <p class="card-text">
-                                <small class="text-muted">Зарплата: от @job.SalaryFrom</small>
-                            </p>
-                            <form method="post" asp-controller="Favorite" asp-action="DeleteJobFromFavories">
-                                <input type="hidden" name="id" value="@job.Id" />
-                                <button type="submit" class="btn btn-secondary">Удалить с избранного</button>
-                            </form>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             }
         </div>

@@ -64,5 +64,21 @@ namespace SearchJob.Mappers
 
 
         }
+
+        public static Job ToJobFromDetails(this JobDto jobModel)
+        {
+            return new Job
+            {
+                Id = jobModel.Id,
+                Title = jobModel.Title,
+                Description = jobModel.Description,
+                CompanyName = jobModel.CompanyName,
+                Location = jobModel.Location,
+                SalaryFrom = jobModel.SalaryFrom,
+                SalaryTo = jobModel.SalaryTo,
+                Url = jobModel.Url
+            };
+
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SearchJob.Data;
 using SearchJob.Dtos.Job;
+using SearchJob.Helper;
 using SearchJob.Interfaces;
 using SearchJob.Mappers;
 using SearchJob.Models;
@@ -24,23 +25,41 @@ namespace SearchJob.Controllers
             _service = service;
         }
 
-        //[Authorize]
         [HttpGet("GetAllJob")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 6)
         {
+
             var jobFromDb = await _repository.GetAsync();
-
-            var jobFromHH = await _service.FindJobInHHAsync(1);
-
+            
+            var jobFromHH = await _service.FindJobInHHAsync(page);           
+           
             var jobs = jobFromDb.Union(jobFromHH).ToList();
-
-            if (jobs == null) {
-
-                return View(jobFromDb);
+                
+            if (jobs == null)
+            {
+                return View(new PaginatedJobViewModel());
             }
 
             
-            return View(jobs);
+            int totalJobs = jobs.Count;
+            int totalPages = (int)Math.Ceiling(totalJobs / (double)pageSize);
+
+            
+            var jobsOnPage = jobs
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList();
+
+
+            var paginatedViewModel = new PaginatedJobViewModel
+            {
+                Jobs = jobsOnPage,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalJobs = jobs.Count()
+            };
+
+            return View(paginatedViewModel);
         }
 
         //[Authorize]
@@ -57,7 +76,6 @@ namespace SearchJob.Controllers
 
                 return NotFound();
             }
-
 
             return Ok(jobs);
         }
@@ -95,6 +113,11 @@ namespace SearchJob.Controllers
         {
             var jobs = await _repository.GetAsync();
 
+            if (searchString == null)
+            {
+                return View("GetAll", jobs);
+            }
+
             if (jobs == null || !jobs.Any())
             {
                 ViewData["CurrentFilter"] = searchString;
@@ -111,18 +134,21 @@ namespace SearchJob.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            return View("GetAll", jobs);
+            return View("GetAll", new PaginatedJobViewModel() { 
+                Jobs = jobs,
+                TotalJobs = jobs.Count()
+            } );
         }
 
-        [HttpGet("Details{id}")]
         [Authorize]
+        [HttpGet("Details")]
         public async Task<IActionResult> Details(int id)
         {
             var jobModel = await _repository.GetByIdAsync(id);
             if (jobModel == null)
-            {
-                var res = await _repository.CreateAsync(jobModel);
-                jobModel = res;
+            {   
+                //var res = await _repository.CreateAsync(id);
+                //jobModel = res;
             }
 
             return View(jobModel);

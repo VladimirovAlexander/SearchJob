@@ -46,7 +46,7 @@ namespace SearchJob.Controllers
                 
 
             }
-            var userFavorites = await _favoriteRepo.GetUserFavorite(appUser);
+            var userFavorites = await _favoriteRepo.GetUserFavoriteAsync(appUser);
 
 
             var existingFavorite = userFavorites.FirstOrDefault(x => x.Id == job.Id);
@@ -77,7 +77,7 @@ namespace SearchJob.Controllers
         {
             var userName =  User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName).Value;
             var appUser = await _userManager.FindByNameAsync(userName);
-            var userFavorite = await _favoriteRepo.GetUserFavorite(appUser);
+            var userFavorite = await _favoriteRepo.GetUserFavoriteAsync(appUser);
             return View(userFavorite);
         }
 
@@ -90,6 +90,37 @@ namespace SearchJob.Controllers
             var userFavorite = await _favoriteRepo.DeleteJobFromFavorite(id);
 
             return RedirectToAction("Favorites");  
+        }
+
+        [HttpGet("searchInFavorites")]
+        public async Task<IActionResult> Search(string? searchString)
+        {
+            var userName = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName).Value;
+            var appUser = await _userManager.FindByNameAsync(userName);
+            var jobs = await _favoriteRepo.GetUserFavoriteAsync(appUser);
+
+            if (searchString == null)
+            {
+                return View("Favorites", jobs);
+            }
+
+            if (jobs == null || !jobs.Any())
+            {
+                ViewData["CurrentFilter"] = searchString;
+                return View("GetAll", new List<Job>());
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                jobs = jobs.Where(j =>
+                    j.Title.ToLower().Contains(searchString.ToLower()) ||
+                    j.CompanyName.ToLower().Contains(searchString.ToLower())
+                ).ToList();
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
+            return View("Favorites", jobs);
         }
 
     }

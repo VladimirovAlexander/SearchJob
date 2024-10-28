@@ -6,14 +6,14 @@ namespace SearchJob.Dtos.Job
 {
     public class HHJob
     {
-        // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+        
         public class Address
         {
             public string city { get; set; }
             public string street { get; set; }
             public string building { get; set; }
-            public double lat { get; set; }
-            public double lng { get; set; }
+            public double? lat { get; set; }
+            public double? lng { get; set; }
             public object description { get; set; }
             public string raw { get; set; }
             public Metro metro { get; set; }
@@ -36,8 +36,8 @@ namespace SearchJob.Dtos.Job
             public string alternate_url { get; set; }
             public object logo_urls { get; set; }
             public string vacancies_url { get; set; }
-            public bool accredited_it_employer { get; set; }
-            public bool trusted { get; set; }
+            public bool? accredited_it_employer { get; set; }
+            public bool? trusted { get; set; }
         }
 
         public class Employment
@@ -55,11 +55,11 @@ namespace SearchJob.Dtos.Job
         public class Item
         {
             public int id { get; set; }
-            public bool premium { get; set; }
+            public bool? premium { get; set; }
             public string name { get; set; }
             public object department { get; set; }
-            public bool has_test { get; set; }
-            public bool response_letter_required { get; set; }
+            public bool? has_test { get; set; }
+            public bool? response_letter_required { get; set; }
             public Area area { get; set; }
             public Salary salary { get; set; }
             public Type type { get; set; }
@@ -68,7 +68,7 @@ namespace SearchJob.Dtos.Job
             public object sort_point_distance { get; set; }
             public DateTime published_at { get; set; }
             public DateTime created_at { get; set; }
-            public bool archived { get; set; }
+            public bool? archived { get; set; }
             public string apply_alternate_url { get; set; }
             public object insider_interview { get; set; }
             public string url { get; set; }
@@ -81,13 +81,13 @@ namespace SearchJob.Dtos.Job
             public List<object> working_days { get; set; }
             public List<object> working_time_intervals { get; set; }
             public List<object> working_time_modes { get; set; }
-            public bool accept_temporary { get; set; }
+            public bool? accept_temporary { get; set; }
             public List<ProfessionalRole> professional_roles { get; set; }
-            public bool accept_incomplete_resumes { get; set; }
+            public bool? accept_incomplete_resumes { get; set; }
             public Experience experience { get; set; }
             public Employment employment { get; set; }
             public object adv_response_url { get; set; }
-            public bool is_adv_vacancy { get; set; }
+            public bool? is_adv_vacancy { get; set; }
             public object adv_context { get; set; }
         }
 
@@ -97,8 +97,8 @@ namespace SearchJob.Dtos.Job
             public string line_name { get; set; }
             public string station_id { get; set; }
             public string line_id { get; set; }
-            public double lat { get; set; }
-            public double lng { get; set; }
+            public double? lat { get; set; }
+            public double? lng { get; set; }
         }
 
         public class MetroStation
@@ -107,8 +107,8 @@ namespace SearchJob.Dtos.Job
             public string line_name { get; set; }
             public string station_id { get; set; }
             public string line_id { get; set; }
-            public double lat { get; set; }
-            public double lng { get; set; }
+            public double? lat { get; set; }
+            public double? lng { get; set; }
         }
 
         public class ProfessionalRole
@@ -137,7 +137,7 @@ namespace SearchJob.Dtos.Job
             public int? from { get; set; }
             public object? to { get; set; }
             public string currency { get; set; }
-            public bool gross { get; set; }
+            public bool? gross { get; set; }
         }
 
         public class Schedule

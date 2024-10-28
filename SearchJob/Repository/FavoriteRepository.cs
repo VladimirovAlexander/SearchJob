@@ -27,7 +27,7 @@ namespace SearchJob.Repository
             return favoriteModel;
         }
 
-        public async Task<List<Job>> GetUserFavorite(AppUser user)
+        public async Task<List<Job>> GetUserFavoriteAsync(AppUser user)
         {   
             var favoriteModel = await _context.Favorites.Where(x => x.AppUserId == user.Id)
             .Select(job => new Job
