@@ -107,6 +107,8 @@ namespace SearchJob.Controllers
                 
                 _httpContextAccessor.HttpContext.Response.Cookies.Append("jwt-token", token);
                 
+
+
                 return Redirect("/api/Job/GetAllJob");
             } 
 

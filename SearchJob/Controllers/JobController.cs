@@ -68,7 +68,7 @@ namespace SearchJob.Controllers
         {
             var jobFromDb = await _repository.GetAsync();
 
-            var jobFromHH = await _service.FindJobInHHAsync(2);
+            var jobFromHH = await _service.FindJobInHHAsync(3);
 
             var jobs = jobFromDb.Union(jobFromHH);
             if (jobs == null)
@@ -145,11 +145,7 @@ namespace SearchJob.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var jobModel = await _repository.GetByIdAsync(id);
-            if (jobModel == null)
-            {   
-                //var res = await _repository.CreateAsync(id);
-                //jobModel = res;
-            }
+            
 
             return View(jobModel);
         }

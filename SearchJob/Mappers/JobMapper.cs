@@ -1,4 +1,5 @@
 ﻿using SearchJob.Dtos.Job;
+using SearchJob.Dtos.Job.HHJob;
 using SearchJob.Models;
 
 
@@ -37,7 +38,7 @@ namespace SearchJob.Mappers
             };
 
         }
-        public static Job ToJobFromHH(this HHJob.Item hhJob)
+        public static Job ToJobFromHH(this Item hhJob)
         {
             //return new Job
             //{

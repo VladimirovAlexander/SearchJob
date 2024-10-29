@@ -34,18 +34,16 @@ namespace SearchJob.Controllers
         public async Task<IActionResult> AddFavorite([FromForm] Job job)
         {   
            
-            var username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+            var username = User.Claims.Single(x => x.Type == ClaimTypes.GivenName)?.Value;
             var appUser = await _userManager.FindByNameAsync(username);
 
-           
             var jobModel = (await _jobRepo.GetAsync()).FirstOrDefault(x => x.Id == job.Id);
+
             if(jobModel == null)
             {
-               
                 var createdJob = await _jobRepo.CreateAsync(job);
-                
-
             }
+
             var userFavorites = await _favoriteRepo.GetUserFavoriteAsync(appUser);
 
 
@@ -55,6 +53,7 @@ namespace SearchJob.Controllers
                 TempData["ErrorMessage"] = $"Вакансия {job.Title} уже находится в избранном.";
                 return RedirectToAction("GetAll", "Job");
             }
+
             var favoriteModel = new Favorite
             {   
 

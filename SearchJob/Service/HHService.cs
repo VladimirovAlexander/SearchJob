@@ -6,6 +6,7 @@ using SearchJob.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using SearchJob.Repository;
 using System.Net.Http;
+using SearchJob.Dtos.Job.HHJob;
 namespace SearchJob.Service
 {
     public class HHService : IHHService
@@ -30,7 +31,7 @@ namespace SearchJob.Service
                 if (result.IsSuccessStatusCode)
                 {
                     var content = await result.Content.ReadAsStringAsync();
-                    var tasks = JsonConvert.DeserializeObject<HHJob.Root>(content);
+                    var tasks = JsonConvert.DeserializeObject<Root>(content);
 
                     if (tasks != null && tasks.items != null)
                     {
