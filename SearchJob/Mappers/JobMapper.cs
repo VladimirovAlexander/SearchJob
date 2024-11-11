@@ -40,17 +40,6 @@ namespace SearchJob.Mappers
         }
         public static Job ToJobFromHH(this Item hhJob)
         {
-            //return new Job
-            //{
-            //    Title = hhJob.name,
-            //    Description = hhJob.snippet.responsibility,
-            //    CompanyName = hhJob.employer.name,
-            //    Location = hhJob.area.name,
-            //    SalaryFrom = hhJob.salary.from,
-            //    SalaryTo = (int)hhJob.salary.to,
-            //    Url = hhJob.alternate_url
-
-            //};
             return new Job
             {   
                 Id = hhJob.id,

@@ -71,13 +71,44 @@
             }
         </div>
 
+        @{
+            int totalPages = Model.TotalPages;
+            int currentPage = Model.CurrentPage;
+            int pageRange = 5; 
+            int startPage = Math.Max(1, currentPage - pageRange);
+            int endPage = Math.Min(totalPages, currentPage + pageRange);
+        }
+
         <!-- Пагинация -->
         <nav>
             <ul class="pagination">
-                @for (int i = 1; i <= Model.TotalPages; i++)
+                
+                @if (currentPage > 1)
                 {
-                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("GetAll", new { page = 1 })">&laquo;</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage - 1 })">&lsaquo;</a>
+                    </li>
+                }
+
+                
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
                         <a class="page-link" href="@Url.Action("GetAll", new { page = i })">@i</a>
+                    </li>
+                }
+
+                
+                @if (currentPage < totalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("GetAll", new { page = currentPage + 1 })">&rsaquo;</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("GetAll", new { page = totalPages })">&raquo;</a>
                     </li>
                 }
             </ul>
