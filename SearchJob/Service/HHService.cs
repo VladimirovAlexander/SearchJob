@@ -13,17 +13,21 @@ namespace SearchJob.Service
     {
         private readonly HttpClient _httpClient;
         private readonly IJobRepository _repository;
+        private readonly IConfiguration _configuration;
         
-        public HHService(HttpClient httpClient, IJobRepository repository) 
+        public HHService(HttpClient httpClient, IJobRepository repository, IConfiguration configuration ) 
         { 
             _httpClient = httpClient; 
             _repository = repository;
+            _configuration = configuration;
         }
 
 
         public async Task<List<Job>> FindJobInHHAsync(int page)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.hh.ru/vacancies?page={page}&per_page=20");
+            var getString = _configuration["ApiHH:Get20Item"].Replace("Intpage", page.ToString());
+
+            var request = new HttpRequestMessage(HttpMethod.Get, getString);
             request.Headers.Add("User-Agent", "Mozilla/5.0");
 
             using (var result = await _httpClient.SendAsync(request))
